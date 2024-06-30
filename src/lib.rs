@@ -15,6 +15,7 @@ pub struct AsciiRenderer {
 
 impl AsciiRenderer {
     pub fn new() -> Self {
+        // darkest to lightest
         let ascii_chars = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft"
             .chars()
             .rev()
@@ -48,7 +49,7 @@ impl Default for AsciiRenderer {
 }
 
 pub struct Camera {
-    cam: VideoCapture,
+    capture: VideoCapture,
 }
 
 impl Camera {
@@ -57,12 +58,12 @@ impl Camera {
         if !cam.is_opened()? {
             anyhow::bail!("Unable to open default camera!");
         }
-        Ok(Self { cam })
+        Ok(Self { capture: cam })
     }
 
     pub fn capture_frame(&mut self, width: i32, height: i32) -> Result<Option<DynamicImage>> {
         let mut frame = core::Mat::default();
-        if !self.cam.read(&mut frame)? || frame.empty() {
+        if !self.capture.read(&mut frame)? || frame.empty() {
             return Ok(None);
         }
 
