@@ -1,9 +1,15 @@
+mod ascii_renderer;
+mod camera;
+mod display;
+
 use anyhow::Result;
 use crossterm::terminal;
 use std::thread;
 use std::time::Duration;
 
-use vroom_client::{AsciiRenderer, Camera, Display};
+use ascii_renderer::AsciiRenderer;
+use camera::Camera;
+use display::Display;
 
 fn main() -> Result<()> {
     let mut camera = Camera::new()?;
