@@ -7,7 +7,6 @@ pub struct AsciiRenderer {
 
 impl AsciiRenderer {
     pub fn new() -> Self {
-        // dark to lights
         let ascii_chars = "$@B%8&WM#*oahkbdpqwmZO0QLCJUYXzcvunxrjft"
             .chars()
             .rev()
