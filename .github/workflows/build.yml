@@ -1,0 +1,119 @@
+name: Vroom Build
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'client/**'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'client/**'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+
+      - name: Install OpenCV dependencies (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get install -y libopencv-dev
+
+      - name: Install OpenCV dependencies (macOS)
+        if: matrix.os == 'macos-latest'
+        run: brew install opencv
+
+      - name: Install OpenCV dependencies (Windows)
+        if: matrix.os == 'windows-latest'
+        run: choco install opencv
+
+      - name: Build vroom_client
+        run: cargo build --release -p vroom_client
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: vroom_client-${{ matrix.os }}
+          path: |
+            target/release/vroom_client
+            target/release/vroom_client.exe
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download artifacts (Linux)
+        uses: actions/download-artifact@v3
+        with:
+          name: vroom_client-ubuntu-latest
+          path: artifacts/linux
+
+      - name: Download artifacts (Windows)
+        uses: actions/download-artifact@v3
+        with:
+          name: vroom_client-windows-latest
+          path: artifacts/windows
+
+      - name: Download artifacts (macOS)
+        uses: actions/download-artifact@v3
+        with:
+          name: vroom_client-macos-latest
+          path: artifacts/macos
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v1.0.0
+          release_name: Release v1.0.0
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset (Linux)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: artifacts/linux/vroom_client
+          asset_name: vroom-linux
+          asset_content_type: application/octet-stream
+
+      - name: Upload Release Asset (Windows)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: artifacts/windows/vroom_client.exe
+          asset_name: vroom-windows.exe
+          asset_content_type: application/octet-stream
+
+      - name: Upload Release Asset (macOS)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: artifacts/macos/vroom_client
+          asset_name: vroom-macos
+          asset_content_type: application/octet-stream
