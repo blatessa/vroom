@@ -54,14 +54,14 @@ jobs:
           curl -L -o C:\opencv.exe https://github.com/opencv/opencv/releases/download/4.10.0/opencv-4.10.0-windows.exe
           7z x C:\opencv.exe -oC:\opencv
           echo 'C:\opencv\opencv\build\x64\vc16\bin' | Out-File -Append -FilePath $env:GITHUB_PATH
-          echo 'OPENCV_INCLUDE_PATHS=C:\opencv\opencv\build\include\opencv2' | Out-File -Append -FilePath $env:GITHUB_ENV
+          echo 'OPENCV_INCLUDE_PATHS=C:\opencv\opencv\build\include' | Out-File -Append -FilePath $env:GITHUB_ENV
           echo 'OPENCV_LINK_PATHS=C:\opencv\opencv\build\x64\vc16\lib' | Out-File -Append -FilePath $env:GITHUB_ENV
           echo 'OPENCV_LINK_LIBS=opencv_world4100' | Out-File -Append -FilePath $env:GITHUB_ENV
           echo 'CMAKE_PREFIX_PATH=C:\opencv\opencv\build' | Out-File -Append -FilePath $env:GITHUB_ENV
           echo 'PKG_CONFIG_PATH=C:\opencv\opencv\build\x64\vc16\lib\pkgconfig' | Out-File -Append -FilePath $env:GITHUB_ENV
           echo 'OpenCV_DIR=C:\opencv\opencv\build' | Out-File -Append -FilePath $env:GITHUB_ENV
         env:
-          OPENCV_INCLUDE_PATHS: 'C:\opencv\opencv\build\include\opencv2'
+          OPENCV_INCLUDE_PATHS: 'C:\opencv\opencv\build\include'
           OPENCV_LINK_PATHS: 'C:\opencv\opencv\build\x64\vc16\lib'
           OPENCV_LINK_LIBS: 'opencv_world4100'
           OpenCV_DIR: 'C:\opencv\opencv\build'
