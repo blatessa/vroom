@@ -1,4 +1,3 @@
-use opencv::prelude::*;
 mod ascii_renderer;
 mod camera;
 mod display;
