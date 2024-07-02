@@ -69,23 +69,19 @@ jobs:
       - name: Build vroom_client package
         run: cargo build --release --package vroom_client
 
-      - name: Upload artifact
+      - name: Upload artifact (Windows)
+        if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v3
         with:
           name: vroom_client-${{ matrix.os }}
           path: target/release/vroom_client.exe
-        if: matrix.os == 'windows-latest'
 
       - name: Upload artifact (non-Windows)
+        if: matrix.os != 'windows-latest'
         uses: actions/upload-artifact@v3
         with:
           name: vroom_client-${{ matrix.os }}
           path: target/release/vroom_client
-        if: matrix.os != 'windows-latest'
-
-      - name: List build output
-        run: ls -la target/release/
-        if: success()
 
   release:
     needs: build
