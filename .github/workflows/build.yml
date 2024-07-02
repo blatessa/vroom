@@ -82,23 +82,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Download artifacts (Linux)
+      - name: Download all artifacts
         uses: actions/download-artifact@v3
-        with:
-          name: vroom_client-ubuntu-latest
-          path: artifacts/linux
 
-      - name: Download artifacts (macOS)
-        uses: actions/download-artifact@v3
-        with:
-          name: vroom_client-macos-latest
-          path: artifacts/macos
-
-      - name: Download artifacts (Windows)
-        uses: actions/download-artifact@v3
-        with:
-          name: vroom_client-windows-latest
-          path: artifacts/windows
+      - name: List Files
+        run: ls -R artifacts/
 
       - name: Create Release
         id: create_release
