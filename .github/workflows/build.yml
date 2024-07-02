@@ -69,18 +69,23 @@ jobs:
       - name: Build vroom_client package
         run: cargo build --release --package vroom_client
 
-      - name: List build output (Debugging)
-        run: |
-          echo "Listing contents of target/release/"
-          Get-ChildItem -Path target/release/ -Force | Format-List
-        shell: powershell
-        if: always()
-
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: vroom_client-${{ matrix.os }}
           path: target/release/vroom_client.exe
+        if: matrix.os == 'windows-latest'
+
+      - name: Upload artifact (non-Windows)
+        uses: actions/upload-artifact@v3
+        with:
+          name: vroom_client-${{ matrix.os }}
+          path: target/release/vroom_client
+        if: matrix.os != 'windows-latest'
+
+      - name: List build output
+        run: ls -la target/release/
+        if: success()
 
   release:
     needs: build
@@ -96,6 +101,9 @@ jobs:
 
       - name: List Files in Artifacts Directory
         run: ls -R artifacts/
+
+      - name: Debug artifact directories
+        run: find artifacts/ -type f -exec ls -l {} \;
 
       - name: Create Release
         id: create_release
@@ -128,6 +136,6 @@ jobs:
         uses: actions/upload-release-asset@v1
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: artifacts/vroom_client-windows-latest/vroom_client
+          asset_path: artifacts/vroom_client-windows-latest/vroom_client.exe
           asset_name: vroom-windows
           asset_content_type: application/octet-stream
