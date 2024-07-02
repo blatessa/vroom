@@ -69,15 +69,18 @@ jobs:
       - name: Build vroom_client package
         run: cargo build --release --package vroom_client
 
+      - name: List build output (Debugging)
+        run: |
+          echo "Listing contents of target/release/"
+          Get-ChildItem -Path target/release/ -Force | Format-List
+        shell: powershell
+        if: always()
+
       - name: Upload artifact
         uses: actions/upload-artifact@v3
         with:
           name: vroom_client-${{ matrix.os }}
-          path: target/release/vroom_client
-
-      - name: List build output
-        run: ls -la target/release/
-        if: success()
+          path: target/release/vroom_client.exe
 
   release:
     needs: build
@@ -93,9 +96,6 @@ jobs:
 
       - name: List Files in Artifacts Directory
         run: ls -R artifacts/
-
-      - name: Debug artifact directories
-        run: find artifacts/ -type f -exec ls -l {} \;
 
       - name: Create Release
         id: create_release
