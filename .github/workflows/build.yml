@@ -75,6 +75,10 @@ jobs:
           name: vroom_client-${{ matrix.os }}
           path: target/release/vroom_client
 
+      - name: List build output
+        run: ls -la target/release/
+        if: success()
+
   release:
     needs: build
     runs-on: ubuntu-latest
@@ -84,9 +88,14 @@ jobs:
 
       - name: Download all artifacts
         uses: actions/download-artifact@v3
+        with:
+          path: artifacts/
 
-      - name: List Files
+      - name: List Files in Artifacts Directory
         run: ls -R artifacts/
+
+      - name: Debug artifact directories
+        run: find artifacts/ -type f -exec ls -l {} \;
 
       - name: Create Release
         id: create_release
@@ -101,30 +110,24 @@ jobs:
 
       - name: Upload Release Asset (Linux)
         uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: artifacts/linux/vroom_client
+          asset_path: artifacts/vroom_client-ubuntu-latest/vroom_client
           asset_name: vroom-linux
           asset_content_type: application/octet-stream
 
       - name: Upload Release Asset (macOS)
         uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: artifacts/macos/vroom_client
+          asset_path: artifacts/vroom_client-macos-latest/vroom_client
           asset_name: vroom-macos
           asset_content_type: application/octet-stream
 
       - name: Upload Release Asset (Windows)
         uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: artifacts/windows/vroom_client
+          asset_path: artifacts/vroom_client-windows-latest/vroom_client
           asset_name: vroom-windows
           asset_content_type: application/octet-stream
