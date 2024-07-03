@@ -24,12 +24,18 @@ impl Display {
             self.previous_frame = vec![(' ', Color::Black); ascii_frame.len()];
         }
 
+        let mut cursor_moved = false;
+
         for (i, (char, color)) in ascii_frame.iter().enumerate() {
             if i >= self.previous_frame.len() {
                 break;
             }
             let (prev_char, prev_color) = &self.previous_frame[i];
             if char != prev_char || color != prev_color {
+                if !cursor_moved {
+                    cursor_moved = true;
+                    execute!(self.stdout, cursor::Hide)?;
+                }
                 let x = (i as u32 % img_width) as u16;
                 let y = (i as u32 / img_width) as u16;
                 execute!(self.stdout, cursor::MoveTo(x, y))?;
@@ -39,6 +45,11 @@ impl Display {
                 self.previous_frame[i] = (*char, *color);
             }
         }
+
+        if cursor_moved {
+            execute!(self.stdout, cursor::Show)?;
+        }
+
         self.stdout.reset()?;
         self.stdout.flush()?;
         Ok(())

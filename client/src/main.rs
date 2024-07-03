@@ -25,6 +25,7 @@ fn main() -> Result<()> {
             display.draw(ascii_frame, img_width)?;
         }
 
-        thread::sleep(Duration::from_millis(100));
+        // Reduce sleep duration to improve responsiveness
+        thread::sleep(Duration::from_millis(10));
     }
 }
